@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Test-Exception
-version: 0.19
+version: 0.20
 author:
   - Adrian Howard <adrianh@quietstars.com>
 abstract: Test exception based code
@@ -16,5 +16,5 @@ build_requires:
 provides:
   Test::Exception:
     file: lib/Test/Exception.pm
-    version: 0.19
+    version: 0.20
 generated_by: Module::Build version 0.25_02
