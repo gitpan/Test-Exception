@@ -2,8 +2,12 @@
 
 use strict;
 
-use Test::More tests => 12;
-use Test::Exception;
+use Test::More tests => 13;
+
+BEGIN { 
+	use_ok('Test::Exception')
+		or Test::More->builder->BAILOUT('cannot load Test::Exception')
+}
 
 sub div {
    my ($a, $b) = @_;

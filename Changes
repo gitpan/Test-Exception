@@ -1,4 +1,19 @@
-Revision history for Perl extension Test::Exception.
+Revision history for Perl extension Test::Exception:
+
+0.09
+	-	Fixed poor English in throws_ok docs.
+
+0.08  Fri May 31
+	-	Added reference to Test::Inline to docs
+	-	Test::More now in PREREQ_PM
+	-	Culled some code that could never be called
+	-	Added t/pod.t and t/documented.t
+	-	Now bails if cannot load module in tests
+	-	Fixed typo of Text::Differences in docs
+	-	Added stacktrace.t to demontrate error reported by Janek 
+		Schleicher <bigj@kamelfreund.de> where a stacktrace in the 
+		exception can cause throws_ok to always succeed.
+	-	Stopped stacktrace.t failing.
 
 0.07  Fri Apr 12
 	-	may_be_regex -> maybe_regex in Test::Builder

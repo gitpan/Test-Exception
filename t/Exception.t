@@ -3,7 +3,15 @@
 use strict;
 
 use Test::Builder::Tester tests => 11;
-use Test::Exception;
+
+BEGIN { 
+	my $module = 'Test::Exception';
+    eval "use $module";
+	if ($@) {
+		print "Bail out!: Cannot find $module in (@INC)\n";
+		exit(255);
+	};
+};
 
 
 package Local::Error::Simple;

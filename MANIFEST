@@ -4,5 +4,8 @@ MANIFEST
 Makefile.PL
 README
 t/Exception.t
+t/documented.t
+t/pod.t
 t/preserve.t
 t/return.t
+t/stacktrace.t
