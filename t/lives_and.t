@@ -2,8 +2,9 @@
 
 use strict;
 use warnings;
-use Test::More tests => 3;
-use Test::Exception;
+use Test::More tests => 4;
+
+BEGIN { use_ok( 'Test::Exception' ) };
 
 sub works {return shift};
 sub dies { die 'oops' };

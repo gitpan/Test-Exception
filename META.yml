@@ -1,0 +1,15 @@
+# http://module-build.sourceforge.net/META-spec.html
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         Test-Exception
+version:      0.17
+version_from: Exception.pm
+installdirs:  site
+requires:
+    Sub::Uplevel:                  0.06
+    Test::Builder:                 0.13
+    Test::Builder::Tester:         1.01
+    Test::Harness:                 2.03
+    Test::More:                    0.44
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.21

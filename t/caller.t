@@ -3,9 +3,9 @@
 # Make sure caller() is undisturbed.
 
 use strict;
-use Test::More tests => 2;
+use Test::More tests => 3;
 
-use Test::Exception;
+BEGIN {use_ok('Test::Exception')};
 
 eval { die caller() . "\n" };
 is( $@, "main\n" );

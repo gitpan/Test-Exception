@@ -2,9 +2,9 @@
 
 use strict;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
-use Test::Exception;
+BEGIN { use_ok( 'Test::Exception' ) };
 
 sub div {
    my ($a, $b) = @_;
@@ -12,7 +12,7 @@ sub div {
 };
 
 dies_ok { div(1, 0) } 'exception thrown okay in dies_ok';
-like( $@, '/^Illegal division by zero/', 'exception preserved' );
+like( $@, '/^Illegal division by zero/', 'exception preserved after dies_ok' );
 
 throws_ok { div(1, 0) } '/^Illegal division by zero/', 'exception thrown okay in throws_ok';
-like( $@, '/^Illegal division by zero/', 'exception preserved' );
+like( $@, '/^Illegal division by zero/', 'exception preserved after thrown_ok' );

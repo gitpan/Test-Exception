@@ -8,11 +8,21 @@ use Sub::Uplevel;
 use base qw(Exporter);
 
 use vars qw($VERSION @EXPORT @EXPORT_OK);
-$VERSION = '0.15';
+
+$VERSION = '0.17';
 @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
 
+sub import {
+    my $self = shift;
+    if (@_) {
+        my $package = caller;
+        $Tester->exported_to($package);
+        $Tester->plan(@_);
+    };
+    $self->export_to_level(1, $self, $_) foreach @EXPORT;
+}
 
 =head1 NAME
 
@@ -22,6 +32,12 @@ Test::Exception - test functions for exception based code
 
   use Test::More tests => 5;
   use Test::Exception;
+
+  # or if you don't need Test::More
+
+  use Test::Exception tests => 5;
+
+  # then...
 
   # Check that something died
   dies_ok {$foo->method1} 'expecting to die';
@@ -44,12 +60,14 @@ This module provides a few convenience methods for testing exception based code.
 
 If you are not already familiar with L<Test::More> now would be the time to go take a look.
 
+You can specify the test plan when you C<use Test::Exception> in the same way as C<use Test::More>. See L<Test::More> for details.
+
 =cut
 
 
 sub _try_as_caller {
-    my $sub = shift;
-    eval { uplevel 3, $sub };
+    my $coderef = shift;
+    eval { uplevel 3, $coderef };
     return $@;
 };
 
@@ -93,8 +111,8 @@ The test name is optional, but recommended.
 
 
 sub dies_ok (&;$) {
-    my ($sub, $name) = @_;
-    my $exception = _try_as_caller($sub);
+    my ($coderef, $name) = @_;
+    my $exception = _try_as_caller($coderef);
     my $ok = $Tester->ok( _is_exception($exception), $name );
     $@ = $exception;
     return($ok);
@@ -130,11 +148,10 @@ The test name is optional, but recommended.
 =cut
 
 sub lives_ok (&;$) {
-    my ($sub, $name) = @_;
-    my $exception = _try_as_caller($sub);
-    my $died = _is_exception($exception);
-    my $ok = $Tester->ok(!$died, $name);
-    $Tester->diag(_exception_as_string("died:", $exception)) if $died;
+    my ($coderef, $name) = @_;
+    my $exception = _try_as_caller($coderef);
+    my $ok = $Tester->ok(! _is_exception($exception), $name)
+        || $Tester->diag(_exception_as_string("died:", $exception));
     $@ = $exception;
     return($ok);
 }
@@ -185,15 +202,15 @@ The test name is optional. If no test name is given a description of the excepti
 
 
 sub throws_ok (&$;$) {
-    my ($sub, $class, $test_name) = @_;
-    $test_name ||= _exception_as_string("threw", $class);
-    my $exception = _try_as_caller($sub);
-    my $regex = $Tester->maybe_regex($class);
+    my ($coderef, $expecting, $name) = @_;
+    $name ||= _exception_as_string("threw", $expecting);
+    my $exception = _try_as_caller($coderef);
+    my $regex = $Tester->maybe_regex($expecting);
     my $ok = $regex ? ($exception =~ m/$regex/) 
-            : UNIVERSAL::isa($exception, ref($class) || $class);
-    $Tester->ok($ok, $test_name);
+            : UNIVERSAL::isa($exception, ref($expecting) || $expecting);
+    $Tester->ok($ok, $name);
     unless ($ok) {
-        $Tester->diag( _exception_as_string("expecting:", $class) );
+        $Tester->diag( _exception_as_string("expecting:", $expecting) );
         $Tester->diag( _exception_as_string("found:", $exception) );
     };
     $@ = $exception;
@@ -278,6 +295,8 @@ Thanks to Janek Schleicher, Michael G Schwern, chromatic and Mark Fowler for rep
 
 Thanks to Aristotle for suggesting lives_and.
 
+Thanks to Peter Scott for suggesting having an import() for the module.
+
 
 =head1 AUTHOR
 
@@ -313,7 +332,7 @@ Inlining your tests next to the code being tested.
 
 =head1 LICENCE
 
-Copyright 2002 Adrian Howard, All Rights Reserved.
+Copyright 2002-2003 Adrian Howard, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 
