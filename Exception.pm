@@ -8,7 +8,7 @@ use Sub::Uplevel;
 use base qw(Exporter);
 
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.12';
+$VERSION = '0.13';
 @EXPORT = qw(dies_ok lives_ok throws_ok);
 
 my $Tester = Test::Builder->new;
@@ -16,7 +16,7 @@ my $Tester = Test::Builder->new;
 
 =head1 NAME
 
-Test::Exception - Convenience routines for testing exception based code
+Test::Exception - test functions for exception based code
 
 =head1 SYNOPSIS
 
@@ -109,13 +109,21 @@ The test name is optional, but recommended.
 
 =cut
 
+sub _exception_as_string {
+	my $exception = shift;
+	my $class = ref($exception);
+	$exception = "$class ($exception)" 
+			if $class && "$exception" !~ m/^\Q$class/;
+	return($exception);
+};
 
 sub lives_ok (&;$) {
 	my ($sub, $test_name) = @_;
 	my $exception = _try_as_caller($sub);
 	my $lived = $exception eq '';
 	my $ok = $Tester->ok($lived, $test_name);
-	$Tester->diag("died: $@") unless $lived;
+	$Tester->diag("died: " . _exception_as_string($exception))
+			unless $lived;
 	$@ = $exception;
 	return($ok);
 }
@@ -174,6 +182,8 @@ sub throws_ok (&$;$) {
 	unless ($ok) {
 		$exception = 'normal exit' if $exception eq '';
 		$class = 'undef' unless defined($class);
+		$exception = _exception_as_string($exception);
+		$class = _exception_as_string($class);
 		$Tester->diag("expecting: $class exception");
 		$Tester->diag("found: $exception");
 	};

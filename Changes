@@ -1,11 +1,18 @@
 Revision history for Perl extension Test::Exception:
 
+0.13
+    -   fixed MANIFEST and added MANIFEST.SKIP
+    -   better output for lives_ok and throws_ok if exception classes 
+        overload ""
+    -   bug where it would fail if Test::Builder::ok ever threw 
+        exceptions internally fixed.
+
 0.12  Mon Aug 26 2002 2002
     -   patched return.t so that it skips if we don't have a 
         Test::Harness that can handle TODO tests (thanks to 
         <chromatic@rmci.net> for pointing this out).
-    -	tweaked POD and README
-    -	Fixed prototypes
+    -   tweaked POD and README
+    -   Fixed prototypes
 
 0.11  Sat Jun 29 2002
     -   corrected README file
