@@ -1,5 +1,6 @@
+Build.PL
 Changes
-Exception.pm
+lib/Test/Exception.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -12,3 +13,4 @@ t/pod.t
 t/preserve.t
 t/return.t
 t/stacktrace.t
+SIGNATURE    Added here by Module::Build
