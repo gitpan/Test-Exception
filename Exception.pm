@@ -7,9 +7,9 @@ use Test::Builder;
 use Sub::Uplevel;
 use base qw(Exporter);
 
-use vars qw($VERSION @EXPORT);
-$VERSION = '0.13';
-@EXPORT = qw(dies_ok lives_ok throws_ok);
+use vars qw($VERSION @EXPORT @EXPORT_OK);
+$VERSION = '0.15';
+@EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
 
@@ -20,7 +20,7 @@ Test::Exception - test functions for exception based code
 
 =head1 SYNOPSIS
 
-  use Test::More tests => 4;
+  use Test::More tests => 5;
   use Test::Exception;
 
   # Check that something died
@@ -35,6 +35,8 @@ Test::Exception - test functions for exception based code
   # Check an exception of the given class (or subclass) is thrown
   throws_ok {$foo->method4} 'Error::Simple', 'simple error thrown';
 
+  # Check that a test runs without an exception
+  lives_and {is $foo->method, 42} 'method is 42';
 
 =head1 DESCRIPTION
 
@@ -52,6 +54,24 @@ sub _try_as_caller {
 };
 
 
+sub _is_exception {
+    my $exception = shift;
+    ref($exception) || $exception ne '';
+};
+
+
+sub _exception_as_string {
+    my ($prefix, $exception) = @_;
+    return "$prefix undef" unless defined($exception);
+    return "$prefix normal exit" unless _is_exception($exception);
+    my $class = ref($exception);
+    $exception = "$class ($exception)" 
+            if $class && "$exception" !~ m/^\Q$class/;
+    chomp($exception);
+    return("$prefix $exception");
+};
+
+
 =over 4
 
 =item B<dies_ok>
@@ -65,7 +85,7 @@ Checks that a piece of code dies, rather than returning normally. For example:
 
     dies_ok { div(1, 0) } 'divide by zero detected';
 
-A true value is returned if the test succeeds, false otherwise. $@ is guaranteed to be the cause of death (if any).
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
 
 The test name is optional, but recommended. 
 
@@ -73,11 +93,11 @@ The test name is optional, but recommended.
 
 
 sub dies_ok (&;$) {
-	my ($sub, $test_name) = @_;
-	my $exception = _try_as_caller($sub);
-	my $ok = $Tester->ok($exception ne '', $test_name);
-	$@ = $exception;
-	return($ok);
+    my ($sub, $name) = @_;
+    my $exception = _try_as_caller($sub);
+    my $ok = $Tester->ok( _is_exception($exception), $name );
+    $@ = $exception;
+    return($ok);
 }
 
 
@@ -103,30 +123,22 @@ Should a lives_ok() test fail it produces appropriate diagnostic messages. For e
     #     Failed test (test.t at line 15)
     # died: open failed (No such file or directory)
 
-A true value is returned if the test succeeds, false otherwise. $@ is guaranteed to be the cause of death (if any).
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
 
 The test name is optional, but recommended. 
 
 =cut
 
-sub _exception_as_string {
-	my $exception = shift;
-	my $class = ref($exception);
-	$exception = "$class ($exception)" 
-			if $class && "$exception" !~ m/^\Q$class/;
-	return($exception);
-};
-
 sub lives_ok (&;$) {
-	my ($sub, $test_name) = @_;
-	my $exception = _try_as_caller($sub);
-	my $lived = $exception eq '';
-	my $ok = $Tester->ok($lived, $test_name);
-	$Tester->diag("died: " . _exception_as_string($exception))
-			unless $lived;
-	$@ = $exception;
-	return($ok);
+    my ($sub, $name) = @_;
+    my $exception = _try_as_caller($sub);
+    my $died = _is_exception($exception);
+    my $ok = $Tester->ok(!$died, $name);
+    $Tester->diag(_exception_as_string("died:", $exception)) if $died;
+    $@ = $exception;
+    return($ok);
 }
+
 
 =item B<throws_ok>
 
@@ -165,32 +177,79 @@ Should a throws_ok() test fail it produces appropriate diagnostic messages. For 
     # expecting: Error::Simple exception
     # found: normal exit
 
-A true value is returned if the test succeeds, false otherwise. $@ is guaranteed to be the cause of death (if any).
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
 
-The test name is optional, but recommended. 
+The test name is optional. If no test name is given a description of the exception being checked for is used. 
 
 =cut
 
 
 sub throws_ok (&$;$) {
-	my ($sub, $class, $test_name) = @_;
-	my $exception = _try_as_caller($sub);
-	my $regex = $Tester->maybe_regex($class);
-	my $ok = $regex ? ($exception =~ m/$regex/) 
-			: UNIVERSAL::isa($exception, ref($class) || $class);
-	$Tester->ok($ok, $test_name);
-	unless ($ok) {
-		$exception = 'normal exit' if $exception eq '';
-		$class = 'undef' unless defined($class);
-		$exception = _exception_as_string($exception);
-		$class = _exception_as_string($class);
-		$Tester->diag("expecting: $class exception");
-		$Tester->diag("found: $exception");
-	};
-	$@ = $exception;
-	return($ok);
+    my ($sub, $class, $test_name) = @_;
+    $test_name ||= _exception_as_string("threw", $class);
+    my $exception = _try_as_caller($sub);
+    my $regex = $Tester->maybe_regex($class);
+    my $ok = $regex ? ($exception =~ m/$regex/) 
+            : UNIVERSAL::isa($exception, ref($class) || $class);
+    $Tester->ok($ok, $test_name);
+    unless ($ok) {
+        $Tester->diag( _exception_as_string("expecting:", $class) );
+        $Tester->diag( _exception_as_string("found:", $exception) );
+    };
+    $@ = $exception;
+    return($ok);
 };
 
+
+=item B<lives_and>
+
+Run a test that may throw an exception. For example, instead of doing:
+
+    my $file;
+    lives_ok { $file = read_file('answer.txt') } 'read_file worked';
+    is $file, "42\n", 'answer was 42';
+
+You can use lives_and() like this:
+
+    lives_and { is read_file('answer.txt'), "42\n" } 'answer is 42';
+
+Which is the same as doing
+
+    is read_file('answer.txt'), "42\n", 'answer is 42';
+
+unless C<read_file('answer.txt')> dies, in which case you get the same kind of error as lives_ok()
+
+    not ok 1 - answer is 42
+    #     Failed test (test.t at line 15)
+    # died: open failed (No such file or directory)
+
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
+
+The test name is optional, but recommended.
+
+=cut
+
+sub lives_and (&$) {
+    my ($test, $name) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level+1;
+    {
+        my $ok = \&Test::Builder::ok;
+        no warnings;
+        local *Test::Builder::ok = sub {
+            $_[2] = $name unless defined $_[2];
+            $ok->(@_);
+        };
+        use warnings;
+        eval { $test->() } and return 1;
+    };
+    my $exception = $@;
+    if (_is_exception($exception)) {
+        $Tester->ok(0, $name);
+        $Tester->diag( _exception_as_string("died:", $exception) );
+    };
+    $@ = $exception;
+    return;
+}
 
 =back
 
@@ -215,7 +274,9 @@ Thanks to chromatic and Michael G Schwern for the excellent Test::Builder, witho
 
 Thanks to Michael G Schwern and Mark Fowler for suggestions and comments on initial versions of this module.
 
-Thanks to Janek Schleicher, Michael G Schwern and chromatic for reporting/fixing bugs.
+Thanks to Janek Schleicher, Michael G Schwern, chromatic and Mark Fowler for reporting/fixing bugs.
+
+Thanks to Aristotle for suggesting lives_and.
 
 
 =head1 AUTHOR

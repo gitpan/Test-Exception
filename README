@@ -1,5 +1,5 @@
-Test/Exception v0.13
-====================
+Test/Exception
+==============
 
 This module provides a few convenience methods for testing
 exception based code. It is built with Test::Builder and
@@ -19,20 +19,15 @@ To install this module type the following:
 
 DEPENDENCIES
 
-This module requires the following:
+See Makefile.PL for details of module dependencies.	
 
-	Test::Builder
-	Test::Builder::Tester 
-	Test::More
-	Sub::Uplevel
-	
 For all tests to run you also need
 
 	Test::Harness v2.03 or greater
 
 COPYRIGHT AND LICENCE
 
-Copyright 2002 Adrian Howard, All Rights Reserved.
+Copyright 2002-2003 Adrian Howard, All Rights Reserved.
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
