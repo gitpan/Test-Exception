@@ -9,3 +9,4 @@ t/pod.t
 t/preserve.t
 t/return.t
 t/stacktrace.t
+t/caller.t

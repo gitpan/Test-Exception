@@ -5,7 +5,9 @@ BEGIN {
 	use strict;
 	use Test::Builder;
 	use File::Find;
-	
+	use File::Spec;
+	use FindBin;
+
 	my $Test = Test::Builder->new;
 	
 	eval 'use Pod::Checker';
@@ -14,16 +16,16 @@ BEGIN {
 	eval 'use IO::String';
 	$Test->skip_all("need IO::String") if $@;
 	
-	my @Blib = grep /blib/, @INC;
-	$Test->skip_all("no blib directories in \@INC") unless @Blib;
+	my $Blib = File::Spec->catdir($FindBin::Bin, File::Spec->updir, 'blib', 'lib');
+	$Test->skip_all("no $Blib directory") unless -d $Blib;
 	
-	my @Modules = ();
-	find(sub {(push @Modules, $File::Find::name) if $_ =~ m/\.pm$/}, @Blib);
-	$Test->skip_all("no modules in (@Blib)") unless @Modules;
+	my @Module_files = ();
+	find(sub {(push @Module_files, $File::Find::name) if $_ =~ m/\.pm$/}, $Blib);
+	$Test->skip_all("no modules in $Blib") unless @Module_files;
 	
-	$Test->expected_tests(scalar(@Modules));
+	$Test->expected_tests(scalar(@Module_files));
 	
-	foreach my $module (sort @Modules) {
+	foreach my $module (sort @Module_files) {
 		my $errors = IO::String->new;
 		my $checker = Pod::Checker->new(-warnings => 1);
 		$checker->parse_from_file($module, $errors);

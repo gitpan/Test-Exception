@@ -1,6 +1,15 @@
 Revision history for Perl extension Test::Exception:
 
-0.09
+0.10  Sun Jun 2
+	-	Stopped over-exuberant pod.t and documented.t checking that 
+		other peoples modules were documented and had legal POD!
+	-	Couple of minor tweaks to the docs.
+	-	Added caller.t and patch to Exception.pm from Michael G Schwern 
+		to stop dies_ok, lives_ok and throws_ok interfering with 
+		caller(). Much better than the regex hack added in 0.08 --- 
+		which has now been removed.
+
+0.09  Sat Jun 1
 	-	Fixed poor English in throws_ok docs.
 
 0.08  Fri May 31
@@ -34,8 +43,8 @@ Revision history for Perl extension Test::Exception:
 0.03  Tue Apr 9
 	-	dies_ok, lives_ok & throws_ok now all return the result of the 
 		underlying ok
-	-	$@ is now guaranteed to be preserved (and is documented as such). 
-		Thanks to Michael G Schwern for suggesting this.
+	-	$@ is now guaranteed to be preserved (and is documented as 
+		such). Thanks to Michael G Schwern for suggesting this.
 	-	Tests run tainted, strict & with warnings 
 		(just to be on the safe side :-)
 

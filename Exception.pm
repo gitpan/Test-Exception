@@ -4,10 +4,11 @@ package Test::Exception;
 use 5.005;
 use strict;
 use Test::Builder;
+use Sub::Uplevel;
 use base qw(Exporter);
 
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.09';
+$VERSION = '0.10';
 @EXPORT = qw(dies_ok lives_ok throws_ok);
 
 my $Tester = Test::Builder->new;
@@ -37,10 +38,18 @@ Test::Exception - Convenience routines for testing exception based code
 
 =head1 DESCRIPTION
 
-This module provides a few convenience methods for testing exception based 
-code. It is built with L<Test::Builder> and plays happily with L<Test::More> and friends.
+This module provides a few convenience methods for testing exception based code. It is built with L<Test::Builder> and plays happily with L<Test::More> and friends.
 
 If you are not already familiar with L<Test::More> now would be the time to go take a look.
+
+=cut
+
+
+sub _run_code {
+    my $sub = shift;
+    eval { uplevel 3, $sub };
+    return $@;
+};
 
 
 =over 4
@@ -60,13 +69,11 @@ A true value is returned if the test succeeds, false otherwise. $@ is guaranteed
 
 The test name is optional, but recommended. 
 
-
 =cut
 
 sub dies_ok (&@) {
 	my ($sub, $message) = @_;
-	eval {&$sub};
-	my $exception = $@;
+	my $exception = _run_code($sub);
 	my $ok = $Tester->ok(!(defined($@) && $@ eq ''), $message);
 	$@ = $exception;
 	return($ok);
@@ -103,8 +110,7 @@ The test name is optional, but recommended.
 
 sub lives_ok (&@) {
 	my ($sub, $message) = @_;
-	eval {&$sub};
-	my $exception = $@;
+	my $exception = _run_code($sub);
 	my $lived = defined($@) && $@ eq '';
 	my $ok = $Tester->ok($lived, $message);
 	$Tester->diag("died: $@") unless $lived;
@@ -130,8 +136,6 @@ If your perl does not support C<qr//> you can also pass a regex-like string, for
     throws_ok { 
         read_file('/etc/kcpassword') 
     } '/Permission denied/', 'no permissions';
-
-I<NOTE:> Any line in the exception containing the string C<Test::Exception::throws_ok(> is ignored by the regex. Otherwise tests on exceptions that includes a stacktrace can match because the regex appears in the stacktrace as an argument to throws_ok.
 
 The second form of throws_ok test passes if the exception is of the same class as the one supplied, or a subclass of that class. For example:
 
@@ -159,15 +163,12 @@ The test name is optional, but recommended.
 
 sub throws_ok (&@) {
 	my ($sub, $class, $message) = @_;
-	eval {&$sub()};
-	my $exception = $@;
+	my $exception = _run_code($sub);
 	my $ok;
 	unless (defined($exception) && $exception eq '') {
 		my $regex;
 		if ($regex = $Tester->maybe_regex($class)) {
-			my $string = $exception;
-			$string =~ s/^.*\QTest::Exception::throws_ok(\E.*$//mg;
-			$ok = ($string =~ m/$regex/);
+			$ok = ($exception =~ m/$regex/);
 		} elsif (ref($exception)) {
 			$class = ref($class) if ref($class);
 			$ok = UNIVERSAL::isa($exception, $class);
@@ -202,8 +203,23 @@ Nothing at the time of writing.
 If you think this module should do something that it doesn't do at the moment please let me know.
 
 
-=head1 SEE ALSO
+=head1 ACKNOWLEGEMENTS
 
+Thanks to chromatic and Michael G Schwern for the excellent Test::Builder, without which this module wouldn't be possible.
+
+Thanks to Michael G Schwern and Mark Fowler for suggestions and comments on initial versions of this module.
+
+Thanks to Janek Schleicher and Michael G Schwern for reporting/fixing bugs.
+
+
+=head1 AUTHOR
+
+Adrian Howard <adrianh@quietstars.com>
+
+If you can spare the time, please drop me a line if you find this module useful.
+
+
+=head1 SEE ALSO
 
 L<Test::Builder> provides a consistent backend for building test libraries. The following modules are all built with L<Test::Builder> and work well together.
 
@@ -222,20 +238,6 @@ Test strings and data structures and show differences if not ok.
 Inlining your tests next to the code being tested.
 
 =back
-
-
-=head1 AUTHOR
-
-Adrian Howard <adrianh@quietstars.com>
-
-If you can spare the time, please drop me a line if you find this module useful.
-
-
-=head1 ACKNOWLEGEMENTS
-
-Thanks to Michael G Schwern and Mark Fowler for suggestions and comments on initial versions of this module.
-
-This module wouldn't be possible without the excellent Test::Builder. Thanks to chromatic <chromatic@wgz.org> and Michael G Schwern <schwern@pobox.com> for creating such a useful module.
 
 
 =head1 LICENCE
