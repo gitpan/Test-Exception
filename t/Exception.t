@@ -2,7 +2,7 @@
 
 use strict;
 
-use Test::Builder::Tester tests => 11;
+use Test::Builder::Tester tests => 12;
 
 BEGIN { 
 	my $module = 'Test::Exception';
@@ -46,7 +46,7 @@ sub error {
 
 test_out("ok 1");
 dies_ok { error("die") };
-test_test("dies_ok: die okay");
+test_test("dies_ok: die");
 
 test_out("not ok 1 - lived. oops");
 test_fail(+1);
@@ -55,7 +55,7 @@ test_test("dies_ok: normal exit detected");
 
 test_out("ok 1 - lived");
 lives_ok { 1 } "lived";
-test_test("lives_ok: normal exit okay");
+test_test("lives_ok: normal exit");
 
 test_out("not ok 1");
 test_fail(+2);
@@ -65,7 +65,7 @@ test_test("lives_ok: die detected");
 
 test_out("ok 1 - expecting normal die");
 throws_ok { error("die") } '/normal/', 'expecting normal die';
-test_test("throws_ok: regex match okay");
+test_test("throws_ok: regex match");
 
 test_out("not ok 1");
 test_fail(+3);
@@ -76,18 +76,18 @@ test_test("throws_ok: regex bad match detected");
 
 test_out("ok 1");
 throws_ok { error("simple") } "Local::Error::Simple";
-test_test("throws_ok: identical exception class okay");
+test_test("throws_ok: identical exception class");
 
 test_out("not ok 1");
 test_fail(+3);
 test_diag("expecting: Local::Error::Simple exception");
 test_diag("found: normal exit");
 throws_ok { error("none") } "Local::Error::Simple";
-test_test("throws_ok: normal exit detected");
+test_test("throws_ok: exception on normal exit");
 
 test_out("ok 1");
 throws_ok { error("test") } "Local::Error::Simple";
-test_test("throws_ok: exception sub-class okay");
+test_test("throws_ok: exception sub-class");
 
 test_out("not ok 1");
 test_fail(+3);
@@ -99,4 +99,8 @@ test_test("throws_ok: bad sub-class match detected");
 test_out("ok 1");
 my $e = Local::Error::Test->new("hello");
 throws_ok { error("test") } $e;
-test_test("throws_ok: class from object match okay");
+test_test("throws_ok: class from object match");
+
+test_out("ok 1");
+throws_ok { error("none") } qr/^$/;
+test_test("throws_ok: normal exit matched");

@@ -8,7 +8,7 @@ use Sub::Uplevel;
 use base qw(Exporter);
 
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.10';
+$VERSION = '0.11';
 @EXPORT = qw(dies_ok lives_ok throws_ok);
 
 my $Tester = Test::Builder->new;
@@ -45,7 +45,7 @@ If you are not already familiar with L<Test::More> now would be the time to go t
 =cut
 
 
-sub _run_code {
+sub _try_as_caller {
     my $sub = shift;
     eval { uplevel 3, $sub };
     return $@;
@@ -71,10 +71,11 @@ The test name is optional, but recommended.
 
 =cut
 
+
 sub dies_ok (&@) {
-	my ($sub, $message) = @_;
-	my $exception = _run_code($sub);
-	my $ok = $Tester->ok(!(defined($@) && $@ eq ''), $message);
+	my ($sub, $test_name) = @_;
+	my $exception = _try_as_caller($sub);
+	my $ok = $Tester->ok($exception ne '', $test_name);
 	$@ = $exception;
 	return($ok);
 }
@@ -96,7 +97,7 @@ Tests to see that BLOCK exits normally, and doesn't die. For example:
     my $file;
     lives_ok { $file = read_file('test.txt') } 'file read';
 
-Should a C<lives_ok> test fail it produces appropriate diagnostic messages. For example:
+Should a lives_ok() test fail it produces appropriate diagnostic messages. For example:
 
     not ok 1 - file read
     #     Failed test (test.t at line 15)
@@ -108,11 +109,12 @@ The test name is optional, but recommended.
 
 =cut
 
+
 sub lives_ok (&@) {
-	my ($sub, $message) = @_;
-	my $exception = _run_code($sub);
-	my $lived = defined($@) && $@ eq '';
-	my $ok = $Tester->ok($lived, $message);
+	my ($sub, $test_name) = @_;
+	my $exception = _try_as_caller($sub);
+	my $lived = $exception eq '';
+	my $ok = $Tester->ok($lived, $test_name);
 	$Tester->diag("died: $@") unless $lived;
 	$@ = $exception;
 	return($ok);
@@ -137,7 +139,7 @@ If your perl does not support C<qr//> you can also pass a regex-like string, for
         read_file('/etc/kcpassword') 
     } '/Permission denied/', 'no permissions';
 
-The second form of throws_ok test passes if the exception is of the same class as the one supplied, or a subclass of that class. For example:
+The second form of throws_ok() test passes if the exception is of the same class as the one supplied, or a subclass of that class. For example:
 
     throws_ok {$foo->bar} "Error::Simple", 'simple error';
 
@@ -148,7 +150,7 @@ You can get the same effect by passing an instance of the exception you want to 
     my $SIMPLE = Error::Simple->new();
     throws_ok {$foo->bar} $SIMPLE, 'simple error';
 
-Should a C<throws_ok> test fail it produces appropriate diagnostic messages. For example:
+Should a throws_ok() test fail it produces appropriate diagnostic messages. For example:
 
     not ok 3 - simple error
     #     Failed test (test.t at line 48)
@@ -161,30 +163,24 @@ The test name is optional, but recommended.
 
 =cut
 
+
 sub throws_ok (&@) {
-	my ($sub, $class, $message) = @_;
-	my $exception = _run_code($sub);
-	my $ok;
-	unless (defined($exception) && $exception eq '') {
-		my $regex;
-		if ($regex = $Tester->maybe_regex($class)) {
-			$ok = ($exception =~ m/$regex/);
-		} elsif (ref($exception)) {
-			$class = ref($class) if ref($class);
-			$ok = UNIVERSAL::isa($exception, $class);
-		};
-	};
-	$Tester->ok($ok, $message);
+	my ($sub, $class, $test_name) = @_;
+	my $exception = _try_as_caller($sub);
+	my $regex = $Tester->maybe_regex($class);
+	my $ok = $regex ? ($exception =~ m/$regex/) 
+			: UNIVERSAL::isa($exception, ref($class) || $class);
+	$Tester->ok($ok, $test_name);
 	unless ($ok) {
 		$exception = 'normal exit' if $exception eq '';
 		$class = 'undef' unless defined($class);
-		$class .= " exception" unless ref($class);
-		$Tester->diag("expecting: $class");
+		$Tester->diag("expecting: $class exception");
 		$Tester->diag("found: $exception");
 	};
 	$@ = $exception;
 	return($ok);
 };
+
 
 =back
 
@@ -193,7 +189,7 @@ sub throws_ok (&@) {
 
 None known at the time of writing. 
 
-If you find any please let me know by e-mail, or report the problem with <http://rt.cpan.org/>.
+If you find any please let me know by e-mail, or report the problem with L<http://rt.cpan.org/>.
 
 
 =head1 TO DO

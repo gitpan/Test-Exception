@@ -3,11 +3,9 @@
 # Make sure caller() is undisturbed.
 
 use strict;
-use Test::More tests => 3;
-BEGIN { 
-	use_ok('Test::Exception')
-		or Test::More->builder->BAILOUT('cannot load Test::Exception')
-};
+use Test::More tests => 2;
+
+use Test::Exception;
 
 eval { die caller() . "\n" };
 is( $@, "main\n" );

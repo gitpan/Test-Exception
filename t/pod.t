@@ -20,7 +20,7 @@ BEGIN {
 	$Test->skip_all("no $Blib directory") unless -d $Blib;
 	
 	my @Module_files = ();
-	find(sub {(push @Module_files, $File::Find::name) if $_ =~ m/\.pm$/}, $Blib);
+	find(sub {(push @Module_files, $File::Find::name) if $_ =~ m/\.(pm|pod)$/}, $Blib);
 	$Test->skip_all("no modules in $Blib") unless @Module_files;
 	
 	$Test->expected_tests(scalar(@Module_files));
@@ -29,9 +29,13 @@ BEGIN {
 		my $errors = IO::String->new;
 		my $checker = Pod::Checker->new(-warnings => 1);
 		$checker->parse_from_file($module, $errors);
-		$errors = ${$errors->string_ref};
-		my $ok = $checker->num_errors < 1 && $errors !~ m/WARNING/;
-		$Test->ok($ok, "$module POD legal") || $Test->diag($errors);
+		my @warnings = grep(
+			# I should really fix Pod::Checker :-)
+			!/(WARNING: node 'http:.*non-escaped)|(pod syntax OK)/, 
+			split /\n/, ${$errors->string_ref}
+		);
+		my $ok = $checker->num_errors < 1 && !@warnings;
+		$Test->ok($ok, "$module POD legal") || $Test->diag(@warnings);
 	};
 
 };

@@ -2,13 +2,10 @@
 
 use strict;
 use Carp;
-use Test::Builder::Tester tests => 2;
+use Test::Builder::Tester tests => 1;
 use Test::More;
 
-BEGIN { 
-	use_ok('Test::Exception')
-		or Test::More->builder->BAILOUT('cannot load Test::Exception')
-};
+use Test::Exception;
 
 test_out('not ok 1');
 test_fail(+1);

@@ -1,5 +1,5 @@
-Test/Exception version 0.08
-===========================
+Test/Exception v0.11
+====================
 
 This module provides a few convenience methods for testing
 exception based code. It is built with Test::Builder and
@@ -23,6 +23,8 @@ This module requires the following:
 
 	Test::Builder
 	Test::Builder::Tester 
+	Test::More
+	Sub::Uplevel
 
 COPYRIGHT AND LICENCE
 
