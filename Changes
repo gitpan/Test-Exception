@@ -1,6 +1,13 @@
 Revision history for Perl extension Test::Exception:
 
-0.11  Sat Jun 29
+0.12  Mon Aug 26 2002 2002
+    -   patched return.t so that it skips if we don't have a 
+        Test::Harness that can handle TODO tests (thanks to 
+        <chromatic@rmci.net> for pointing this out).
+    -	tweaked POD and README
+    -	Fixed prototypes
+
+0.11  Sat Jun 29 2002
     -   corrected README file
     -   refactored code a little
     -   minor tweaks to POD
@@ -8,7 +15,7 @@ Revision history for Perl extension Test::Exception:
         (you couldn't regex an empty string - i.e. normal exit).
     -   Fixed bug.
 
-0.10  Sun Jun 2
+0.10  Sun Jun 2 2002
     -   Stopped over-exuberant pod.t and documented.t checking that 
         other peoples modules were documented and had legal POD!
     -   Couple of minor tweaks to the docs.
@@ -17,10 +24,10 @@ Revision history for Perl extension Test::Exception:
         caller(). Much better than the regex hack added in 0.08 --- 
         which has now been removed.
 
-0.09  Sat Jun 1
+0.09  Sat Jun 1 2002
     -   Fixed poor English in throws_ok docs.
 
-0.08  Fri May 31
+0.08  Fri May 31 2002
     -   Added reference to Test::Inline to docs
     -   Test::More now in PREREQ_PM
     -   Culled some code that could never be called
@@ -32,7 +39,7 @@ Revision history for Perl extension Test::Exception:
         exception can cause throws_ok to always succeed.
     -   Stopped stacktrace.t failing.
 
-0.07  Fri Apr 12
+0.07  Fri Apr 12 2002
     -   may_be_regex -> maybe_regex in Test::Builder
 
 0.06
@@ -48,7 +55,7 @@ Revision history for Perl extension Test::Exception:
         Mark Fowler for the suggestion and Michael G Schwern for adding
         code to Test::Builder.
 
-0.03  Tue Apr 9
+0.03  Tue Apr 9 2002
     -   dies_ok, lives_ok & throws_ok now all return the result of the 
         underlying ok
     -   $@ is now guaranteed to be preserved (and is documented as 
@@ -56,7 +63,7 @@ Revision history for Perl extension Test::Exception:
     -   Tests run tainted, strict & with warnings 
         (just to be on the safe side :-)
 
-0.02  Tue Apr 9
+0.02  Tue Apr 9 2002
     -   Documented properly
 
 0.01  Wed Mar 20 00:18:07 2002

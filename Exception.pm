@@ -8,7 +8,7 @@ use Sub::Uplevel;
 use base qw(Exporter);
 
 use vars qw($VERSION @EXPORT);
-$VERSION = '0.11';
+$VERSION = '0.12';
 @EXPORT = qw(dies_ok lives_ok throws_ok);
 
 my $Tester = Test::Builder->new;
@@ -54,9 +54,9 @@ sub _try_as_caller {
 
 =over 4
 
-=item dies_ok BLOCK TEST_NAME
+=item B<dies_ok>
 
-Tests to see that BLOCK exits by dying, rather than by exiting normally. For example:
+Checks that a piece of code dies, rather than returning normally. For example:
 
     sub div {
         my ($a, $b) = @_;
@@ -72,7 +72,7 @@ The test name is optional, but recommended.
 =cut
 
 
-sub dies_ok (&@) {
+sub dies_ok (&;$) {
 	my ($sub, $test_name) = @_;
 	my $exception = _try_as_caller($sub);
 	my $ok = $Tester->ok($exception ne '', $test_name);
@@ -81,9 +81,9 @@ sub dies_ok (&@) {
 }
 
 
-=item lives_ok BLOCK TEST_NAME
+=item B<lives_ok>
 
-Tests to see that BLOCK exits normally, and doesn't die. For example:
+Checks that a piece of code exits normally, and doesn't die. For example:
 
     sub read_file {
         my $file = shift;
@@ -110,7 +110,7 @@ The test name is optional, but recommended.
 =cut
 
 
-sub lives_ok (&@) {
+sub lives_ok (&;$) {
 	my ($sub, $test_name) = @_;
 	my $exception = _try_as_caller($sub);
 	my $lived = $exception eq '';
@@ -120,12 +120,12 @@ sub lives_ok (&@) {
 	return($ok);
 }
 
+=item B<throws_ok>
 
-=item throws_ok BLOCK REGEX, TEST_NAME
+Tests to see that a specific exception is thrown. throws_ok() has two forms: 
 
-=item throws_ok BLOCK CLASS, TEST_NAME
-
-Tests to see that BLOCK throws a specific exception. 
+  throws_ok BLOCK REGEX, TEST_NAME
+  throws_ok BLOCK CLASS, TEST_NAME
 
 In the first form the test passes if the stringified exception matches the give regular expression. For example:
 
@@ -164,7 +164,7 @@ The test name is optional, but recommended.
 =cut
 
 
-sub throws_ok (&@) {
+sub throws_ok (&$;$) {
 	my ($sub, $class, $test_name) = @_;
 	my $exception = _try_as_caller($sub);
 	my $regex = $Tester->maybe_regex($class);
@@ -205,7 +205,7 @@ Thanks to chromatic and Michael G Schwern for the excellent Test::Builder, witho
 
 Thanks to Michael G Schwern and Mark Fowler for suggestions and comments on initial versions of this module.
 
-Thanks to Janek Schleicher and Michael G Schwern for reporting/fixing bugs.
+Thanks to Janek Schleicher, Michael G Schwern and chromatic for reporting/fixing bugs.
 
 
 =head1 AUTHOR
@@ -224,6 +224,10 @@ L<Test::Builder> provides a consistent backend for building test libraries. The 
 =item L<Test::Simple> & L<Test::More>
 
 Basic utilities for writing tests.
+
+=item L<Test::Class>
+
+Easily create test classes in an xUnit style.
 
 =item L<Test::Differences>
 

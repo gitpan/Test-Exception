@@ -1,4 +1,4 @@
-Test/Exception v0.11
+Test/Exception v0.12
 ====================
 
 This module provides a few convenience methods for testing
@@ -25,6 +25,10 @@ This module requires the following:
 	Test::Builder::Tester 
 	Test::More
 	Sub::Uplevel
+	
+For all tests to run you also need
+
+	Test::Harness v2.03 or greater
 
 COPYRIGHT AND LICENCE
 

@@ -2,9 +2,16 @@
 
 use strict;
 
-use Test::More tests => 12;
+BEGIN {
+	use Test::Builder;
+	use Test::Harness;
+	Test::Builder->skip_all("need Test::Harness >= 2.03") unless $Test::Harness::VERSION >= 2.03;
+};
 
+use Test::More tests => 12;
 use Test::Exception;
+
+
 
 sub div {
    my ($a, $b) = @_;
