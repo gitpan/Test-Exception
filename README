@@ -25,6 +25,16 @@ SYNOPSIS
 
       # Check that a test runs without an exception
       lives_and {is $foo->method, 42} 'method is 42';
+  
+      # or if you don't like prototyped functions
+  
+      dies_ok( sub { $foo->method1 }, 'expecting to die' );
+      lives_ok( sub {$foo->method2}, 'expecting to live' );
+      throws_ok( sub {$foo->method3}, qr/division by zero/,
+          'zero caught okay' );
+      throws_ok( sub {$foo->method4}, 'Error::Simple', 
+          'simple error thrown' );
+      lives_and( sub {is $foo->method, 42}, 'method is 42' );
 
 DESCRIPTION
     This module provides a few convenience methods for testing exception
@@ -47,11 +57,13 @@ DESCRIPTION
             };
 
             dies_ok { div(1, 0) } 'divide by zero detected';
+            # or if you don't like prototypes
+            dies_ok( sub { div(1, 0) }, 'divide by zero detected' );
 
         A true value is returned if the test succeeds, false otherwise. On
         exit $@ is guaranteed to be the cause of death (if any).
 
-        The test name is optional, but recommended.
+        The test description is optional, but recommended.
 
     lives_ok
         Checks that a piece of code exits normally, and doesn't die. For
@@ -68,6 +80,8 @@ DESCRIPTION
 
             my $file;
             lives_ok { $file = read_file('test.txt') } 'file read';
+            # or if you don't like prototypes
+            lives_ok( sub { $file = read_file('test.txt') }, 'file read' );
 
         Should a lives_ok() test fail it produces appropriate diagnostic
         messages. For example:
@@ -79,27 +93,27 @@ DESCRIPTION
         A true value is returned if the test succeeds, false otherwise. On
         exit $@ is guaranteed to be the cause of death (if any).
 
-        The test name is optional, but recommended.
+        The test description is optional, but recommended.
 
     throws_ok
         Tests to see that a specific exception is thrown. throws_ok() has
         two forms:
 
-          throws_ok BLOCK REGEX, TEST_NAME
-          throws_ok BLOCK CLASS, TEST_NAME
+          throws_ok BLOCK REGEX, TEST_DESCRIPTION
+          throws_ok BLOCK CLASS, TEST_DESCRIPTION
 
         In the first form the test passes if the stringified exception
         matches the give regular expression. For example:
 
             throws_ok { 
-                read_file('test.txt') 
+                read_file('unreadable') 
             } qr/No such file/, 'no file';
 
         If your perl does not support "qr//" you can also pass a regex-like
         string, for example:
 
             throws_ok { 
-                read_file('/etc/kcpassword') 
+                read_file('unreadable') 
             } '/Permission denied/', 'no permissions';
 
         The second form of throws_ok() test passes if the exception is of
@@ -126,39 +140,46 @@ DESCRIPTION
             # expecting: Error::Simple exception
             # found: normal exit
 
+        Like all other Test::Exception functions you can avoid protypes by
+        passing a subroutine explicitly:
+
+            throws_ok( sub {$foo->bar}, "Error::Simple", 'simple error' );
+
         A true value is returned if the test succeeds, false otherwise. On
         exit $@ is guaranteed to be the cause of death (if any).
 
-        The test name is optional. If no test name is given a description of
-        the exception being checked for is used.
+        A description of the exception being checked is used if no optional
+        test description is passed.
 
     lives_and
         Run a test that may throw an exception. For example, instead of
         doing:
 
-            my $file;
-            lives_ok { $file = read_file('answer.txt') } 'read_file worked';
-            is $file, "42\n", 'answer was 42';
+          my $file;
+          lives_ok { $file = read_file('answer.txt') } 'read_file worked';
+          is $file, "42", 'answer was 42';
 
         You can use lives_and() like this:
 
-            lives_and { is read_file('answer.txt'), "42\n" } 'answer is 42';
+          lives_and { is read_file('answer.txt'), "42" } 'answer is 42';
+          # or if you don't like prototypes
+          lives_and(sub {is read_file('answer.txt'), "42"}, 'answer is 42');
 
         Which is the same as doing
 
-            is read_file('answer.txt'), "42\n", 'answer is 42';
+          is read_file('answer.txt'), "42\n", 'answer is 42';
 
         unless "read_file('answer.txt')" dies, in which case you get the
         same kind of error as lives_ok()
 
-            not ok 1 - answer is 42
-            #     Failed test (test.t at line 15)
-            # died: open failed (No such file or directory)
+          not ok 1 - answer is 42
+          #     Failed test (test.t at line 15)
+          # died: open failed (No such file or directory)
 
         A true value is returned if the test succeeds, false otherwise. On
         exit $@ is guaranteed to be the cause of death (if any).
 
-        The test name is optional, but recommended.
+        The test description is optional, but recommended.
 
 BUGS
     None known at the time of writing.
@@ -166,19 +187,38 @@ BUGS
     If you find any please let me know by e-mail, or report the problem with
     <http://rt.cpan.org/>.
 
-TO DO
-    Nothing at the time of writing.
+COMMUNITY
+  perl-qa
+    If you are interested in testing using Perl I recommend you visit
+    <http://qa.perl.org/> and join the excellent perl-qa mailing list. See
+    <http://lists.perl.org/showlist.cgi?name=perl-qa> for details on how to
+    subscribe.
 
-    If you think this module should do something that it doesn't do at the
-    moment please let me know.
+  perlmonks
+    You can find users of Test::Exception, including the module author, on
+    <http://www.perlmonks.org/>. Feel free to ask questions on
+    Test::Exception there.
+
+  CPAN::Forum
+    The CPAN Forum is a web forum for discussing Perl's CPAN modules. The
+    Test::Exception forum can be found at
+    <http://www.cpanforum.com/dist/Test-Exception>.
+
+TO DO
+    If you think this module should do something that it doesn't (or does
+    something that it shouldn't) please let me know.
+
+    You can see my current to do list at
+    <http://adrianh.tadalist.com/lists/public/15421>, with an RSS feed of
+    changes at <http://adrianh.tadalist.com/lists/feed_public/15421>.
 
 ACKNOWLEGEMENTS
     Thanks to chromatic and Michael G Schwern for the excellent
     Test::Builder, without which this module wouldn't be possible.
 
     Thanks to Michael G Schwern, Mark Fowler, Janek Schleicher, chromatic,
-    Mark Fowler, Peter Scott, Aristotle and Andy Lester for suggestions, bug
-    reports and patches.
+    Peter Scott, Aristotle, Andy Lester, David Wheeler, Jos I. Boumans, Jim
+    Keenan & Perrin for comments, suggestions, bug reports and patches.
 
 AUTHOR
     Adrian Howard <adrianh@quietstars.com>
@@ -200,7 +240,7 @@ SEE ALSO
         Overview of some of the many testing modules available on CPAN.
 
 LICENCE
-    Copyright 2002-2004 Adrian Howard, All Rights Reserved.
+    Copyright 2002-2005 Adrian Howard, All Rights Reserved.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.

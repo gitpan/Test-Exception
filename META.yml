@@ -1,20 +1,8 @@
 --- #YAML:1.0
 name: Test-Exception
-version: 0.20
+version: 0.21
 author:
   - Adrian Howard <adrianh@quietstars.com>
 abstract: Test exception based code
 license: perl
-requires:
-  perl: 5.6.1
-build_requires:
-  Sub::Uplevel: 0.06
-  Test::Builder: 0.13
-  Test::Builder::Tester: 1.01
-  Test::Harness: 2.03
-  Test::More: 0.44
-provides:
-  Test::Exception:
-    file: lib/Test/Exception.pm
-    version: 0.20
-generated_by: Module::Build version 0.25_02
+generated_by: Module::Build version 0.261, without YAML.pm

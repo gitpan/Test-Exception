@@ -1,12 +1,12 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.41.
+signed via the Module::Signature module, version 0.44.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
 
     % cpansign -v
 
-It would check each file's integrity, as well as the signature's
+It will check each file's integrity, as well as the signature's
 validity.  If "==> Signature verified OK! <==" is not displayed,
 the distribution may already have been compromised, and you should
 not run its Makefile.PL or Build.PL.
@@ -14,13 +14,13 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 4cc0b864fa355b70b5bf4662336e56b802823187 Build.PL
-SHA1 7bdc3ec710d7f6d32cf26b7e1fa574bf517f37b5 Changes
-SHA1 c445dfb4c2fe555d56d99414e87562e3f38538c7 MANIFEST
-SHA1 e8e44354925d1c30271f25f22a5324a1e3b55c3e META.yml
+SHA1 b91434e071656b7f009b9051ca905ee21d63630e Build.PL
+SHA1 626dccf1e86dfc2aefd2b0c9a41318b873857847 Changes
+SHA1 712930630729623789d112c1ed5984a08f6fe58c MANIFEST
+SHA1 72922168bbbd51bfed4743305adb1bf59117d71c META.yml
 SHA1 f96694f8e18d1070cc5058e6f48062e7107775de Makefile.PL
-SHA1 56c0ffb3e0578ec1f8da518bc77bb40ce0921bb7 README
-SHA1 f8ebea59f542bbf37657ac64dbd6d5b3ead1817c lib/Test/Exception.pm
+SHA1 fda9453f9b1148975469a694f67bf36a9143e154 README
+SHA1 13d88ac6ff216a4b169346f2561569659fa770b2 lib/Test/Exception.pm
 SHA1 561514a8db844680c9ef92dc2cc94a059f0ad1d9 t/Exception.t
 SHA1 a8b18bfacf37293a63a4aa20fdce596370cd4aaa t/caller.t
 SHA1 d42bc6a5b8ea2755de8e73bc4cd76d1245fe1c9f t/documented.t
@@ -30,9 +30,9 @@ SHA1 1ec6a1d39abbfac90b4d2c62c053ddf59c97ae6f t/preserve.t
 SHA1 aa48b3ab7e6709bdefc079612dc93b11c7414b1c t/return.t
 SHA1 0e21e62241a685fc5d596a67798f847b23248357 t/stacktrace.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.4 (Darwin)
+Version: GnuPG v1.4.1 (Darwin)
 
-iD8DBQFBL8sAaOJcDd+05vARAkWWAJ40s1yCwXBak24wyWnM5rvDle4NsQCeLCJN
-uR6sm0GEW1GvTDqxW+ArziE=
-=fXun
+iD8DBQFCogifaOJcDd+05vARArfDAJoDLdwaksWMs7v7OhO4FtKQ0uT61QCggRhb
+CJH9iNb2uy/AaK0UdHd0bSo=
+=QF2e
 -----END PGP SIGNATURE-----
