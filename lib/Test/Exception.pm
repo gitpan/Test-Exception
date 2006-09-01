@@ -1,27 +1,25 @@
-#! /usr/bin/perl -w
+use strict;
+use warnings;
 
 package Test::Exception;
-use 5.005;
-use strict;
 use Test::Builder;
-use Sub::Uplevel;
-use base qw(Exporter);
+use Sub::Uplevel qw( uplevel );
+use base qw( Exporter );
+use Carp;
 
-use vars qw($VERSION @EXPORT @EXPORT_OK);
-
-$VERSION = '0.21';
-@EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
+our $VERSION = '0.22';
+our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
 
 sub import {
     my $self = shift;
-    if (@_) {
+    if ( @_ ) {
         my $package = caller;
-        $Tester->exported_to($package);
-        $Tester->plan(@_);
+        $Tester->exported_to( $package );
+        $Tester->plan( @_ );
     };
-    $self->export_to_level(1, $self, $_) foreach @EXPORT;
+    $self->export_to_level( 1, $self, $_ ) foreach @EXPORT;
 }
 
 =head1 NAME
@@ -40,29 +38,29 @@ Test::Exception - Test exception based code
   # then...
 
   # Check that something died
-  dies_ok {$foo->method1} 'expecting to die';
+  dies_ok { $foo->method1 } 'expecting to die';
 
   # Check that something did not die
-  lives_ok {$foo->method2} 'expecting to live';
+  lives_ok { $foo->method2 } 'expecting to live';
 
   # Check that the stringified exception matches given regex
-  throws_ok {$foo->method3} qr/division by zero/, 'zero caught okay';
+  throws_ok { $foo->method3 } qr/division by zero/, 'zero caught okay';
 
   # Check an exception of the given class (or subclass) is thrown
-  throws_ok {$foo->method4} 'Error::Simple', 'simple error thrown';
+  throws_ok { $foo->method4 } 'Error::Simple', 'simple error thrown';
 
   # Check that a test runs without an exception
-  lives_and {is $foo->method, 42} 'method is 42';
+  lives_and { is $foo->method, 42 } 'method is 42';
   
   # or if you don't like prototyped functions
   
   dies_ok( sub { $foo->method1 }, 'expecting to die' );
-  lives_ok( sub {$foo->method2}, 'expecting to live' );
-  throws_ok( sub {$foo->method3}, qr/division by zero/,
+  lives_ok( sub { $foo->method2 }, 'expecting to live' );
+  throws_ok( sub { $foo->method3 }, qr/division by zero/,
       'zero caught okay' );
-  throws_ok( sub {$foo->method4}, 'Error::Simple', 
+  throws_ok( sub { $foo->method4 }, 'Error::Simple', 
       'simple error thrown' );
-  lives_and( sub {is $foo->method, 42}, 'method is 42' );
+  lives_and( sub { is $foo->method, 42 }, 'method is 42' );
 
 
 =head1 DESCRIPTION
@@ -85,19 +83,18 @@ sub _try_as_caller {
 
 sub _is_exception {
     my $exception = shift;
-    ref($exception) || $exception ne '';
+    return ref $exception || $exception ne '';
 };
 
 
 sub _exception_as_string {
-    my ($prefix, $exception) = @_;
-    return "$prefix undef" unless defined($exception);
-    return "$prefix normal exit" unless _is_exception($exception);
-    my $class = ref($exception);
+    my ( $prefix, $exception ) = @_;
+    return "$prefix normal exit" unless _is_exception( $exception );
+    my $class = ref $exception;
     $exception = "$class ($exception)" 
             if $class && "$exception" !~ m/^\Q$class/;
-    chomp($exception);
-    return("$prefix $exception");
+    chomp $exception;
+    return "$prefix $exception";
 };
 
 
@@ -108,13 +105,14 @@ sub _exception_as_string {
 Checks that a piece of code dies, rather than returning normally. For example:
 
     sub div {
-        my ($a, $b) = @_;
-        return( $a / $b );
+        my ( $a, $b ) = @_;
+        return $a / $b;
     };
 
-    dies_ok { div(1, 0) } 'divide by zero detected';
+    dies_ok { div( 1, 0 ) } 'divide by zero detected';
+
     # or if you don't like prototypes
-    dies_ok( sub { div(1, 0) }, 'divide by zero detected' );
+    dies_ok( sub { div( 1, 0 ) }, 'divide by zero detected' );
 
 A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
 
@@ -124,11 +122,11 @@ The test description is optional, but recommended.
 
 
 sub dies_ok (&;$) {
-    my ($coderef, $description) = @_;
-    my $exception = _try_as_caller($coderef);
+    my ( $coderef, $description ) = @_;
+    my $exception = _try_as_caller( $coderef );
     my $ok = $Tester->ok( _is_exception($exception), $description );
     $@ = $exception;
-    return($ok);
+    return $ok;
 }
 
 
@@ -138,15 +136,15 @@ Checks that a piece of code exits normally, and doesn't die. For example:
 
     sub read_file {
         my $file = shift;
-        local $/ = undef;
-        open(FILE, $file) or die "open failed ($!)\n";
+        local $/;
+        open my $fh, '<', $file or die "open failed ($!)\n";
         $file = <FILE>;
-        close(FILE);
-        return($file);
+        return $file;
     };
 
     my $file;
     lives_ok { $file = read_file('test.txt') } 'file read';
+
     # or if you don't like prototypes
     lives_ok( sub { $file = read_file('test.txt') }, 'file read' );
 
@@ -163,12 +161,12 @@ The test description is optional, but recommended.
 =cut
 
 sub lives_ok (&;$) {
-    my ($coderef, $description) = @_;
-    my $exception = _try_as_caller($coderef);
-    my $ok = $Tester->ok(! _is_exception($exception), $description)
-        || $Tester->diag(_exception_as_string("died:", $exception));
+    my ( $coderef, $description ) = @_;
+    my $exception = _try_as_caller( $coderef );
+    my $ok = $Tester->ok( ! _is_exception( $exception ), $description );
+	$Tester->diag( _exception_as_string( "died:", $exception ) ) unless $ok;
     $@ = $exception;
-    return($ok);
+    return $ok;
 }
 
 
@@ -181,26 +179,22 @@ Tests to see that a specific exception is thrown. throws_ok() has two forms:
 
 In the first form the test passes if the stringified exception matches the give regular expression. For example:
 
-    throws_ok { 
-        read_file('unreadable') 
-    } qr/No such file/, 'no file';
+    throws_ok { read_file( 'unreadable' ) } qr/No file/, 'no file';
 
 If your perl does not support C<qr//> you can also pass a regex-like string, for example:
 
-    throws_ok { 
-        read_file('unreadable') 
-    } '/Permission denied/', 'no permissions';
+    throws_ok { read_file( 'unreadable' ) } '/No file/', 'no file';
 
 The second form of throws_ok() test passes if the exception is of the same class as the one supplied, or a subclass of that class. For example:
 
-    throws_ok {$foo->bar} "Error::Simple", 'simple error';
+    throws_ok { $foo->bar } "Error::Simple", 'simple error';
 
 Will only pass if the C<bar> method throws an Error::Simple exception, or a subclass of an Error::Simple exception.
 
 You can get the same effect by passing an instance of the exception you want to look for. The following is equivalent to the previous example:
 
-    my $SIMPLE = Error::Simple->new();
-    throws_ok {$foo->bar} $SIMPLE, 'simple error';
+    my $SIMPLE = Error::Simple->new;
+    throws_ok { $foo->bar } $SIMPLE, 'simple error';
 
 Should a throws_ok() test fail it produces appropriate diagnostic messages. For example:
 
@@ -221,19 +215,25 @@ A description of the exception being checked is used if no optional test descrip
 
 
 sub throws_ok (&$;$) {
-    my ($coderef, $expecting, $description) = @_;
-    $description ||= _exception_as_string("threw", $expecting);
-    my $exception = _try_as_caller($coderef);
-    my $regex = $Tester->maybe_regex($expecting);
-    my $ok = $regex ? ($exception =~ m/$regex/) 
-            : UNIVERSAL::isa($exception, ref($expecting) || $expecting);
-    $Tester->ok($ok, $description);
-    unless ($ok) {
-        $Tester->diag( _exception_as_string("expecting:", $expecting) );
-        $Tester->diag( _exception_as_string("found:", $exception) );
+    my ( $coderef, $expecting, $description ) = @_;
+    croak "throws_ok: must pass exception class/object or regex" 
+        unless defined $expecting;
+    $description = _exception_as_string( "threw", $expecting )
+    	unless defined $description;
+    my $exception = _try_as_caller( $coderef );
+    my $regex = $Tester->maybe_regex( $expecting );
+    my $ok = $regex 
+        ? ( $exception =~ m/$regex/ ) 
+        : eval { 
+            $exception->isa( ref $expecting ? ref $expecting : $expecting ) 
+        };
+    $Tester->ok( $ok, $description );
+    unless ( $ok ) {
+        $Tester->diag( _exception_as_string( "expecting:", $expecting ) );
+        $Tester->diag( _exception_as_string( "found:", $exception ) );
     };
     $@ = $exception;
-    return($ok);
+    return $ok;
 };
 
 
@@ -267,10 +267,10 @@ The test description is optional, but recommended.
 
 =cut
 
-sub lives_and (&$) {
-    my ($test, $description) = @_;
+sub lives_and (&;$) {
+    my ( $test, $description ) = @_;
     {
-        local $Test::Builder::Level = $Test::Builder::Level+1;
+        local $Test::Builder::Level = $Test::Builder::Level + 1;
         my $ok = \&Test::Builder::ok;
         no warnings;
         local *Test::Builder::ok = sub {
@@ -281,15 +281,34 @@ sub lives_and (&$) {
         eval { $test->() } and return 1;
     };
     my $exception = $@;
-    if (_is_exception($exception)) {
-        $Tester->ok(0, $description);
-        $Tester->diag( _exception_as_string("died:", $exception) );
+    if ( _is_exception( $exception ) ) {
+        $Tester->ok( 0, $description );
+        $Tester->diag( _exception_as_string( "died:", $exception ) );
     };
     $@ = $exception;
     return;
 }
 
 =back
+
+
+=head1 SKIPPING TEST::EXCEPTION TESTS
+
+Sometimes we want to use Test::Exception tests in a test suite, but don't want to force the user to have Test::Exception installed. One way to do this is to skip the tests if Test::Exception is absent. You can do this with code something like this:
+
+  use strict;
+  use warnings;
+  use Test::More;
+  
+  BEGIN {
+      eval "use Test::Exception";
+      plan skip_all => "Test::Exception needed" if $@;
+  }
+  
+  plan tests => 2;
+  # ... tests that need Test::Exception ...
+
+Note that we load Test::Exception in a C<BEGIN> block ensuring that the subroutine prototypes are in place before the rest of the test script is compiled.
 
 
 =head1 BUGS
@@ -301,17 +320,25 @@ If you find any please let me know by e-mail, or report the problem with L<http:
 
 =head1 COMMUNITY
 
-=head2 perl-qa
+=over 4
+
+=item perl-qa
 
 If you are interested in testing using Perl I recommend you visit L<http://qa.perl.org/> and join the excellent perl-qa mailing list. See L<http://lists.perl.org/showlist.cgi?name=perl-qa> for details on how to subscribe.
 
-=head2 perlmonks
+=item perlmonks
 
 You can find users of Test::Exception, including the module author, on  L<http://www.perlmonks.org/>. Feel free to ask questions on Test::Exception there.
 
-=head2 CPAN::Forum
+=item CPAN::Forum
 
 The CPAN Forum is a web forum for discussing Perl's CPAN modules.   The Test::Exception forum can be found at L<http://www.cpanforum.com/dist/Test-Exception>.
+
+=item AnnoCPAN
+
+AnnoCPAN is a web site that allows community annotations of Perl module documentation. The Test::Exception annotations can be found at L<http://annocpan.org/~ADIE/Test-Exception/>.
+
+=back
 
 
 =head1 TO DO
@@ -325,7 +352,28 @@ You can see my current to do list at L<http://adrianh.tadalist.com/lists/public/
 
 Thanks to chromatic and Michael G Schwern for the excellent Test::Builder, without which this module wouldn't be possible.
 
-Thanks to Michael G Schwern, Mark Fowler, Janek Schleicher, chromatic, Peter Scott, Aristotle, Andy Lester, David Wheeler, Jos I. Boumans, Jim Keenan & Perrin for comments, suggestions, bug reports and patches.
+Thanks to 
+Adam Kennedy,
+Andy Lester, 
+Aristotle, 
+Ben Prew, 
+Cees Hek,
+chromatic, 
+David Golden, 
+David Wheeler, 
+Janek Schleicher, 
+Jim Keenan, 
+Jos I. Boumans, 
+Mark Fowler, 
+Michael G Schwern, 
+Paul,
+Perrin, 
+Peter Scott, 
+Rob Muhlestein 
+Steve Purkis,
+Steve, 
+Tim Bunce,
+and various anonymous folk for comments, suggestions, bug reports and patches.
 
 
 =head1 AUTHOR
@@ -355,12 +403,20 @@ Modules to help test warnings.
 
 Overview of some of the many testing modules available on CPAN.
 
+=item L<http://del.icio.us/tag/Test::Exception>
+
+Delicious links on Test::Exception.
+
+=item L<http://del.icio.us/tag/perl+testing>
+
+Delicious links on perl testing.
+
 =back
 
 
 =head1 LICENCE
 
-Copyright 2002-2005 Adrian Howard, All Rights Reserved.
+Copyright 2002-2006 Adrian Howard, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
 

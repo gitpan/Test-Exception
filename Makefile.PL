@@ -2,16 +2,17 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'Test::Exception',
           'VERSION_FROM' => 'lib/Test/Exception.pm',
           'PREREQ_PM' => {
-                           'Test::More' => '0.44',
+                           'Sub::Uplevel' => '0.13',
+                           'Test::Builder' => '0.33',
+                           'Test::Builder::Tester' => '1.04',
                            'Test::Harness' => '2.03',
-                           'Test::Builder' => '0.13',
-                           'Sub::Uplevel' => '0.06',
-                           'Test::Builder::Tester' => '1.01'
-                         }
+                           'Test::More' => '0.44'
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;
