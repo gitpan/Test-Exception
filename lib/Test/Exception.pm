@@ -7,7 +7,7 @@ use Sub::Uplevel qw( uplevel );
 use base qw( Exporter );
 use Carp;
 
-our $VERSION = '0.22';
+our $VERSION = '0.23';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -48,6 +48,10 @@ Test::Exception - Test exception based code
 
   # Check an exception of the given class (or subclass) is thrown
   throws_ok { $foo->method4 } 'Error::Simple', 'simple error thrown';
+  
+  # all Test::Exceptions subroutines are guaranteed to preserve the state 
+  # of $@ so you can do things like this after throws_ok and dies_ok
+  like $@, 'what the stringified exception should look like';
 
   # Check that a test runs without an exception
   lives_and { is $foo->method, 42 } 'method is 42';
@@ -359,17 +363,21 @@ Aristotle,
 Ben Prew, 
 Cees Hek,
 chromatic, 
+Curt Sampson,
 David Golden, 
 David Wheeler, 
+Janek Schleicher,
 Janek Schleicher, 
 Jim Keenan, 
 Jos I. Boumans, 
+Jost Krieger,
 Mark Fowler, 
 Michael G Schwern, 
-Paul,
-Perrin, 
+Paul McCann,
+Perrin Harkins, 
 Peter Scott, 
 Rob Muhlestein 
+Scott R. Godin,
 Steve Purkis,
 Steve, 
 Tim Bunce,
