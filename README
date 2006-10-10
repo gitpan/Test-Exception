@@ -141,7 +141,7 @@ DESCRIPTION
             # expecting: Error::Simple exception
             # found: normal exit
 
-        Like all other Test::Exception functions you can avoid protypes by
+        Like all other Test::Exception functions you can avoid prototypes by
         passing a subroutine explicitly:
 
             throws_ok( sub {$foo->bar}, "Error::Simple", 'simple error' );
@@ -240,16 +240,16 @@ TO DO
     <http://adrianh.tadalist.com/lists/public/15421>, with an RSS feed of
     changes at <http://adrianh.tadalist.com/lists/feed_public/15421>.
 
-ACKNOWLEGEMENTS
+ACKNOWLEDGMENTS
     Thanks to chromatic and Michael G Schwern for the excellent
     Test::Builder, without which this module wouldn't be possible.
 
     Thanks to Adam Kennedy, Andy Lester, Aristotle, Ben Prew, Cees Hek,
     chromatic, Curt Sampson, David Golden, David Wheeler, Janek Schleicher,
-    Janek Schleicher, Jim Keenan, Jos I. Boumans, Jost Krieger, Mark Fowler,
-    Michael G Schwern, Paul McCann, Perrin Harkins, Peter Scott, Rob
-    Muhlestein Scott R. Godin, Steve Purkis, Steve, Tim Bunce, and various
-    anonymous folk for comments, suggestions, bug reports and patches.
+    Jim Keenan, Jos I. Boumans, Jost Krieger, Mark Fowler, Michael G
+    Schwern, Paul McCann, Perrin Harkins, Peter Scott, Rob Muhlestein Scott
+    R. Godin, Steve Purkis, Steve, Tim Bunce, and various anonymous folk for
+    comments, suggestions, bug reports and patches.
 
 AUTHOR
     Adrian Howard <adrianh@quietstars.com>

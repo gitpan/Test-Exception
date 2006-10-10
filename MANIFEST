@@ -10,6 +10,7 @@ t/developer/documented.t
 t/developer/perlcritic.t
 t/developer/perlcriticrc
 t/developer/pod.t
+t/developer/spelling.t
 t/Exception.t
 t/import.t
 t/isa.t
