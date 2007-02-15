@@ -245,11 +245,11 @@ ACKNOWLEDGMENTS
     Test::Builder, without which this module wouldn't be possible.
 
     Thanks to Adam Kennedy, Andy Lester, Aristotle, Ben Prew, Cees Hek,
-    chromatic, Curt Sampson, David Golden, David Wheeler, Janek Schleicher,
-    Jim Keenan, Jos I. Boumans, Jost Krieger, Mark Fowler, Michael G
-    Schwern, Paul McCann, Perrin Harkins, Peter Scott, Rob Muhlestein Scott
-    R. Godin, Steve Purkis, Steve, Tim Bunce, and various anonymous folk for
-    comments, suggestions, bug reports and patches.
+    chromatic, Curt Sampson, David Cantrell, David Golden, David Wheeler,
+    Janek Schleicher, Jim Keenan, Jos I. Boumans, Jost Krieger, Mark Fowler,
+    Michael G Schwern, Paul McCann, Perrin Harkins, Peter Scott, Rob
+    Muhlestein Scott R. Godin, Steve Purkis, Steve, Tim Bunce, and various
+    anonymous folk for comments, suggestions, bug reports and patches.
 
 AUTHOR
     Adrian Howard <adrianh@quietstars.com>
@@ -277,7 +277,7 @@ SEE ALSO
         Delicious links on perl testing.
 
 LICENCE
-    Copyright 2002-2006 Adrian Howard, All Rights Reserved.
+    Copyright 2002-2007 Adrian Howard, All Rights Reserved.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
