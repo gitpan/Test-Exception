@@ -5,12 +5,12 @@ WriteMakefile
           'NAME' => 'Test::Exception',
           'VERSION_FROM' => 'lib/Test/Exception.pm',
           'PREREQ_PM' => {
-                           'Sub::Uplevel' => '0.13',
-                           'Test::Builder' => '0.33',
-                           'Test::Builder::Tester' => '1.04',
+                           'Sub::Uplevel' => '0.18',
+                           'Test::Builder' => '0.7',
+                           'Test::Builder::Tester' => '1.07',
                            'Test::Harness' => '2.03',
-                           'Test::More' => '0.44',
-                           'Test::Simple' => '0.62'
+                           'Test::More' => '0.7',
+                           'Test::Simple' => '0.7'
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [],

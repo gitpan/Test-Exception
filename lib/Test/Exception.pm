@@ -7,7 +7,7 @@ use Sub::Uplevel qw( uplevel );
 use base qw( Exporter );
 use Carp;
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -37,43 +37,49 @@ Test::Exception - Test exception based code
 
   # then...
 
-  # Check that something died
-  dies_ok { $foo->method1 } 'expecting to die';
-
-  # Check that something did not die
-  lives_ok { $foo->method2 } 'expecting to live';
-
   # Check that the stringified exception matches given regex
-  throws_ok { $foo->method3 } qr/division by zero/, 'zero caught okay';
+  throws_ok { $foo->method } qr/division by zero/, 'zero caught okay';
 
   # Check an exception of the given class (or subclass) is thrown
-  throws_ok { $foo->method4 } 'Error::Simple', 'simple error thrown';
+  throws_ok { $foo->method } 'Error::Simple', 'simple error thrown';
   
   # all Test::Exceptions subroutines are guaranteed to preserve the state 
   # of $@ so you can do things like this after throws_ok and dies_ok
   like $@, 'what the stringified exception should look like';
+
+  # Check that something died - we do not care why
+  dies_ok { $foo->method } 'expecting to die';
+
+  # Check that something did not die
+  lives_ok { $foo->method } 'expecting to live';
 
   # Check that a test runs without an exception
   lives_and { is $foo->method, 42 } 'method is 42';
   
   # or if you don't like prototyped functions
   
-  dies_ok( sub { $foo->method1 }, 'expecting to die' );
-  lives_ok( sub { $foo->method2 }, 'expecting to live' );
-  throws_ok( sub { $foo->method3 }, qr/division by zero/,
+  throws_ok( sub { $foo->method }, qr/division by zero/,
       'zero caught okay' );
-  throws_ok( sub { $foo->method4 }, 'Error::Simple', 
+  throws_ok( sub { $foo->method }, 'Error::Simple', 
       'simple error thrown' );
+  dies_ok( sub { $foo->method }, 'expecting to die' );
+  lives_ok( sub { $foo->method }, 'expecting to live' );
   lives_and( sub { is $foo->method, 42 }, 'method is 42' );
 
 
 =head1 DESCRIPTION
 
-This module provides a few convenience methods for testing exception based code. It is built with L<Test::Builder> and plays happily with L<Test::More> and friends.
+This module provides a few convenience methods for testing exception based code. It is built with 
+L<Test::Builder> and plays happily with L<Test::More> and friends.
 
 If you are not already familiar with L<Test::More> now would be the time to go take a look.
 
-You can specify the test plan when you C<use Test::Exception> in the same way as C<use Test::More>. See L<Test::More> for details.
+You can specify the test plan when you C<use Test::Exception> in the same way as C<use Test::More>.
+See L<Test::More> for details.
+
+NOTE: Test::Exception only checks for exceptions. It will ignore other methods of stopping 
+program execution - including exit(). If you have an exit() in evalled code Test::Exception
+will not catch this with any of its testing functions.
 
 =cut
 
@@ -103,76 +109,6 @@ sub _exception_as_string {
 
 
 =over 4
-
-=item B<dies_ok>
-
-Checks that a piece of code dies, rather than returning normally. For example:
-
-    sub div {
-        my ( $a, $b ) = @_;
-        return $a / $b;
-    };
-
-    dies_ok { div( 1, 0 ) } 'divide by zero detected';
-
-    # or if you don't like prototypes
-    dies_ok( sub { div( 1, 0 ) }, 'divide by zero detected' );
-
-A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
-
-The test description is optional, but recommended. 
-
-=cut
-
-
-sub dies_ok (&;$) {
-    my ( $coderef, $description ) = @_;
-    my $exception = _try_as_caller( $coderef );
-    my $ok = $Tester->ok( _is_exception($exception), $description );
-    $@ = $exception;
-    return $ok;
-}
-
-
-=item B<lives_ok>
-
-Checks that a piece of code exits normally, and doesn't die. For example:
-
-    sub read_file {
-        my $file = shift;
-        local $/;
-        open my $fh, '<', $file or die "open failed ($!)\n";
-        $file = <FILE>;
-        return $file;
-    };
-
-    my $file;
-    lives_ok { $file = read_file('test.txt') } 'file read';
-
-    # or if you don't like prototypes
-    lives_ok( sub { $file = read_file('test.txt') }, 'file read' );
-
-Should a lives_ok() test fail it produces appropriate diagnostic messages. For example:
-
-    not ok 1 - file read
-    #     Failed test (test.t at line 15)
-    # died: open failed (No such file or directory)
-
-A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
-
-The test description is optional, but recommended. 
-
-=cut
-
-sub lives_ok (&;$) {
-    my ( $coderef, $description ) = @_;
-    my $exception = _try_as_caller( $coderef );
-    my $ok = $Tester->ok( ! _is_exception( $exception ), $description );
-	$Tester->diag( _exception_as_string( "died:", $exception ) ) unless $ok;
-    $@ = $exception;
-    return $ok;
-}
-
 
 =item B<throws_ok>
 
@@ -239,6 +175,77 @@ sub throws_ok (&$;$) {
     $@ = $exception;
     return $ok;
 };
+
+
+=item B<dies_ok>
+
+Checks that a piece of code dies, rather than returning normally. For example:
+
+    sub div {
+        my ( $a, $b ) = @_;
+        return $a / $b;
+    };
+
+    dies_ok { div( 1, 0 ) } 'divide by zero detected';
+
+    # or if you don't like prototypes
+    dies_ok( sub { div( 1, 0 ) }, 'divide by zero detected' );
+
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
+
+Remember: This test will pass if the code dies for any reason. If you care about the reason it might be more sensible to write a more specific test using throws_ok().
+
+The test description is optional, but recommended. 
+
+=cut
+
+sub dies_ok (&;$) {
+    my ( $coderef, $description ) = @_;
+    my $exception = _try_as_caller( $coderef );
+    my $ok = $Tester->ok( _is_exception($exception), $description );
+    $@ = $exception;
+    return $ok;
+}
+
+
+=item B<lives_ok>
+
+Checks that a piece of code doesn't die. This allows your test script to continue, rather than aborting if you get an unexpected exception. For example:
+
+    sub read_file {
+        my $file = shift;
+        local $/;
+        open my $fh, '<', $file or die "open failed ($!)\n";
+        $file = <FILE>;
+        return $file;
+    };
+
+    my $file;
+    lives_ok { $file = read_file('test.txt') } 'file read';
+
+    # or if you don't like prototypes
+    lives_ok( sub { $file = read_file('test.txt') }, 'file read' );
+
+Should a lives_ok() test fail it produces appropriate diagnostic messages. For example:
+
+    not ok 1 - file read
+    #     Failed test (test.t at line 15)
+    # died: open failed (No such file or directory)
+
+A true value is returned if the test succeeds, false otherwise. On exit $@ is guaranteed to be the cause of death (if any).
+
+The test description is optional, but recommended. 
+
+=cut
+
+sub lives_ok (&;$) {
+    my ( $coderef, $description ) = @_;
+    my $exception = _try_as_caller( $coderef );
+    my $ok = $Tester->ok( ! _is_exception( $exception ), $description );
+	$Tester->diag( _exception_as_string( "died:", $exception ) ) unless $ok;
+    $@ = $exception;
+    return $ok;
+}
 
 
 =item B<lives_and>
@@ -317,9 +324,13 @@ Note that we load Test::Exception in a C<BEGIN> block ensuring that the subrouti
 
 =head1 BUGS
 
-None known at the time of writing. 
+There are some edge cases in Perl's exception handling where Test::Exception will miss exceptions
+thrown in DESTROY blocks. See the RT bug L<http://rt.cpan.org/Ticket/Display.html?id=24678> for
+details, along with the t/edge-cases.t in the distribution test suite. These will be addressed in
+a future Test::Exception release.
 
-If you find any please let me know by e-mail, or report the problem with L<http://rt.cpan.org/>.
+If you find any more bugs please let me know by e-mail, or report the problem with 
+L<http://rt.cpan.org/>.
 
 
 =head1 COMMUNITY
@@ -359,9 +370,10 @@ Thanks to chromatic and Michael G Schwern for the excellent Test::Builder, witho
 Thanks to 
 Adam Kennedy,
 Andy Lester, 
-Aristotle, 
+Aristotle Pagaltzis, 
 Ben Prew, 
 Cees Hek,
+Chris Dolan,
 chromatic, 
 Curt Sampson,
 David Cantrell,
@@ -370,9 +382,11 @@ David Wheeler,
 Janek Schleicher,
 Jim Keenan, 
 Jos I. Boumans, 
+Joshua ben Jore,
 Jost Krieger,
 Mark Fowler, 
 Michael G Schwern, 
+Nadim Khemir,
 Paul McCann,
 Perrin Harkins, 
 Peter Scott, 
@@ -395,6 +409,14 @@ If you can spare the time, please drop me a line if you find this module useful.
 
 =over 4
 
+=item L<http://del.icio.us/tag/Test::Exception>
+
+Delicious links on Test::Exception.
+
+=item L<Test::Warn> & L<Test::NoWarnings>
+
+Modules to help test warnings.
+
 =item L<Test::Builder>
 
 Support module for building test libraries.
@@ -403,17 +425,9 @@ Support module for building test libraries.
 
 Basic utilities for writing tests.
 
-=item L<Test::Warn> & L<Test::NoWarnings>
-
-Modules to help test warnings.
-
 =item L<http://qa.perl.org/test-modules.html>
 
 Overview of some of the many testing modules available on CPAN.
-
-=item L<http://del.icio.us/tag/Test::Exception>
-
-Delicious links on Test::Exception.
 
 =item L<http://del.icio.us/tag/perl+testing>
 
