@@ -1,6 +1,6 @@
 ---
 name: Test-Exception
-version: 0.26
+version: 0.27
 author:
   - 'Adrian Howard <adrianh@quietstars.com>'
 abstract: Test exception based code
@@ -18,8 +18,8 @@ requires:
 provides:
   Test::Exception:
     file: lib/Test/Exception.pm
-    version: 0.26
-generated_by: Module::Build version 0.2808
+    version: 0.27
+generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
