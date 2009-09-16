@@ -1,25 +1,26 @@
----
-name: Test-Exception
-version: 0.27
-author:
-  - 'Adrian Howard <adrianh@quietstars.com>'
-abstract: Test exception based code
-license: perl
-resources:
-  license: http://dev.perl.org/licenses/
+--- #YAML:1.0
+name:               Test-Exception
+version:            0.27_01
+abstract:           ~
+author:  []
+license:            unknown
+distribution_type:  module
+configure_requires:
+    ExtUtils::MakeMaker:  0
+build_requires:
+    ExtUtils::MakeMaker:  0
 requires:
-  Sub::Uplevel: 0.18
-  Test::Builder: 0.7
-  Test::Builder::Tester: 1.07
-  Test::Harness: 2.03
-  Test::More: 0.7
-  Test::Simple: 0.7
-  perl: 5.6.1
-provides:
-  Test::Exception:
-    file: lib/Test/Exception.pm
-    version: 0.27
-generated_by: Module::Build version 0.280801
+    Sub::Uplevel:         0.18
+    Test::Builder:        0.7
+    Test::Builder::Tester:  1.07
+    Test::Harness:        2.03
+    Test::More:           0.7
+    Test::Simple:         0.7
+no_index:
+    directory:
+        - t
+        - inc
+generated_by:       ExtUtils::MakeMaker version 6.50
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+    url:      http://module-build.sourceforge.net/META-spec-v1.4.html
+    version:  1.4

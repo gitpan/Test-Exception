@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use Test::More skip_all => 'stuff relating to RT#24678 that I have not fixed yet';
+use Test::More;
 
 use Test::Exception tests => 12;
 
@@ -29,7 +29,7 @@ sub A5::DESTROY {delete$SIG{__DIE__};die 43 }
 throws_ok { my $x = bless [], 'A5'; die 42} qr/42.+43/s, q[Died with the primary and secondar errors];
 
 TODO: {
-    our $TODO = q[No clue how to solve this one.];
+    local $TODO = q[No clue how to solve this one.];
     sub A6::DESTROY {delete$SIG{__DIE__};die}
     dies_ok { my $x = bless [], 'A6'; 1 } q[Death during destruction for success is noticed];
 }
