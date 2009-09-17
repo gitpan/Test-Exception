@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 
-use Test::Exception tests => 12;
+use Test::Exception tests => 16;
 
 sub A1::DESTROY {eval{}}
 dies_ok { my $x = bless [], 'A1'; die } q[Unlocalized $@ for eval{} during DESTROY];
@@ -53,6 +53,11 @@ use overload bool => sub {eval{};0}, '0+' => sub{eval{};0}, '""' => sub { eval{}
 package main;
 dies_ok { die bless [], 'A8' } q[Evanescent exceptions are noticed];
 
+package main;
+lives_ok { undef }     q[A sub returning undef lives];
+lives_ok { () }        q[A sub returning the empty lives];
+lives_ok { return }    q[A sub with a bare return lives];
+lives_ok { 0 }         q[A sub returning 0 lives];
 
 __END__
 

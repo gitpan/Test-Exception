@@ -8,7 +8,7 @@ use base qw( Exporter );
 use Scalar::Util 'blessed';
 use Carp;
 
-our $VERSION = '0.27_01';
+our $VERSION = '0.27_02';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -117,6 +117,7 @@ sub _try_as_caller {
     my $failed = not defined eval {
         $SIG{__DIE__} = \ &_DIED;
         uplevel 3, $coderef;
+        1;
     };
 
     return defined( blessed( $@ ) ) ? $@       :
