@@ -8,7 +8,7 @@ use base qw( Exporter );
 use Scalar::Util 'blessed';
 use Carp;
 
-our $VERSION = '0.27_02';
+our $VERSION = '0.27_03';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -100,7 +100,7 @@ sub _quiet_caller (;$) { ## no critic Prototypes
 
 my $DIED;
 sub _DIED {
-    $DIED = 1;
+    $DIED = shift;
 }
 
 sub _try_as_caller {
@@ -112,7 +112,7 @@ sub _try_as_caller {
 
     local $@;
     local $SIG{__DIE__} = $SIG{__DIE__};
-    $DIED = 0;
+    undef $DIED;
 
     my $failed = not defined eval {
         $SIG{__DIE__} = \ &_DIED;
@@ -120,10 +120,9 @@ sub _try_as_caller {
         1;
     };
 
-    return defined( blessed( $@ ) ) ? $@       :
-           $@                       ? $@       :
-           $DIED                    ? "Died\n" :
-           $failed                  ? "Died\n" :
+    return defined $@ && length $@  ? $@       :
+           defined $DIED            ? "Died with ... $DIED\n" :
+           $failed                  ? "Died mysteriously (no error)\n" :
                                       '';
 };
 

@@ -9,15 +9,15 @@ use Test::Exception tests => 16;
 sub A1::DESTROY {eval{}}
 dies_ok { my $x = bless [], 'A1'; die } q[Unlocalized $@ for eval{} during DESTROY];
 
-sub A2::DESTROY {die 43 }
+sub A2::DESTROY {no warnings; die 43}
 throws_ok { my $x = bless [], 'A2'; die 42} qr/42.+43/s, q[Died with the primary and secondar errors];
 
-sub A2a::DESTROY { die 42 }
+sub A2a::DESTROY {no warnings; die 42}
 throws_ok { my $obj = bless [], 'A2a'; die 43 } qr/43/, 
     q[Of multiple failures, the "primary" one is returned];
 
 {
-    sub A3::DESTROY {die}
+    sub A3::DESTROY { no warnings; die }
     dies_ok { my $x = bless [], 'A3'; 1 } q[Death during destruction for success is noticed];
 }
 
@@ -25,12 +25,12 @@ throws_ok { my $obj = bless [], 'A2a'; die 43 } qr/43/,
 sub A4::DESTROY {delete$SIG{__DIE__};eval{}}
 dies_ok { my $x = bless [], 'A4'; die } q[Unlocalized $@ for eval{} during DESTROY];
 
-sub A5::DESTROY {delete$SIG{__DIE__};die 43 }
+sub A5::DESTROY {delete$SIG{__DIE__}; no warnings; die 43}
 throws_ok { my $x = bless [], 'A5'; die 42} qr/42.+43/s, q[Died with the primary and secondar errors];
 
 TODO: {
     local $TODO = q[No clue how to solve this one.];
-    sub A6::DESTROY {delete$SIG{__DIE__};die}
+    sub A6::DESTROY {delete$SIG{__DIE__};no warnings; die}
     dies_ok { my $x = bless [], 'A6'; 1 } q[Death during destruction for success is noticed];
 }
 
