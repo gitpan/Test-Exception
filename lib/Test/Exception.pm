@@ -8,7 +8,7 @@ use base qw( Exporter );
 use Scalar::Util 'blessed';
 use Carp;
 
-our $VERSION = '0.27_03';
+our $VERSION = '0.27_04';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -120,10 +120,16 @@ sub _try_as_caller {
         1;
     };
 
-    return defined $@ && length $@  ? $@       :
-           defined $DIED            ? "Died with ... $DIED\n" :
-           $failed                  ? "Died mysteriously (no error)\n" :
-                                      '';
+    # certain uses of Class::Exception were doing odd things to $@ once
+    # I accessed it. Instead, I'll convert to the better practice of 
+    # saving the value. Should we just save the string value? This seems
+    # to work:
+	my $error = $@;
+	
+    return defined $error && length $error  ? $error       :
+           defined $DIED                    ? "Died with ... $DIED\n" :
+           $failed                          ? "Died mysteriously (no error)\n" :
+                                              '';
 };
 
 
