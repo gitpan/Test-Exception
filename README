@@ -1,6 +1,3 @@
-This is an unauthorized released by brian d foy, bdfoy@cpan.org
-
-
 NAME
     Test::Exception - Test exception based code
 
@@ -19,8 +16,8 @@ SYNOPSIS
 
       # Check an exception of the given class (or subclass) is thrown
       throws_ok { $foo->method } 'Error::Simple', 'simple error thrown';
-      
-  # all Test::Exceptions subroutines are guaranteed to preserve the state 
+  
+      # all Test::Exceptions subroutines are guaranteed to preserve the state 
       # of $@ so you can do things like this after throws_ok and dies_ok
       like $@, 'what the stringified exception should look like';
 
@@ -32,10 +29,10 @@ SYNOPSIS
 
       # Check that a test runs without an exception
       lives_and { is $foo->method, 42 } 'method is 42';
-      
-  # or if you don't like prototyped functions
-      
-  throws_ok( sub { $foo->method }, qr/division by zero/,
+  
+      # or if you don't like prototyped functions
+  
+      throws_ok( sub { $foo->method }, qr/division by zero/,
           'zero caught okay' );
       throws_ok( sub { $foo->method }, 'Error::Simple', 
           'simple error thrown' );
@@ -204,13 +201,13 @@ SKIPPING TEST::EXCEPTION TESTS
       use strict;
       use warnings;
       use Test::More;
-      
-  BEGIN {
+  
+      BEGIN {
           eval "use Test::Exception";
           plan skip_all => "Test::Exception needed" if $@;
       }
-      
-  plan tests => 2;
+  
+      plan tests => 2;
       # ... tests that need Test::Exception ...
 
     Note that we load Test::Exception in a "BEGIN" block ensuring that the

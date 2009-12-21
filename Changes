@@ -1,13 +1,7 @@
 Revision history for Perl extension Test::Exception:
 
-0.27_02 - Thu Sep 17 15:54:30 CDT 2009
-	- unauthorized release by brian d foy <bdfoy@cpan.org>
-	- fix eval to always return a true value even if the tested coderef
-	doesn't when it works.
-	
-0.27_01 - Wed Sep 16 15:32:00 CDT 2009
-	- unauthorized release by brian d foy <bdfoy@cpan.org>
-	- apply patches from RT #24678 to handle pathological cases of $@
+0.28_01
+    -   Patch to fix code with Sub::Uplevel again.  Many thanks to David Golden
 
 0.27
     -   Patch to fix my broken code with the now working Sub::Uplevel. Many
