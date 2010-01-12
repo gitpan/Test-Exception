@@ -6,7 +6,7 @@ use Test::Builder;
 use Sub::Uplevel qw( uplevel );
 use base qw( Exporter );
 
-our $VERSION = '0.28_01';
+our $VERSION = '0.29';
 our @EXPORT = qw(dies_ok lives_ok throws_ok lives_and);
 
 my $Tester = Test::Builder->new;
@@ -406,6 +406,7 @@ Nadim Khemir,
 Paul McCann,
 Perrin Harkins, 
 Peter Scott, 
+Ricardo Signes,
 Rob Muhlestein 
 Scott R. Godin,
 Steve Purkis,
