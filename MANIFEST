@@ -2,12 +2,8 @@ Build.PL
 Changes
 lib/Test/Exception.pm
 MANIFEST			This list of files
+README
 t/caller.t
-t/developer/documented.t
-t/developer/perlcritic.t
-t/developer/perlcriticrc
-t/developer/pod.t
-t/developer/spelling.t
 t/edge-cases.t
 t/Exception.t
 t/import.t
@@ -18,6 +14,10 @@ t/return.t
 t/rt.t
 t/stacktrace.t
 t/throws_ok.t
+xt/documented.t
+xt/perlcritic.t
+xt/perlcriticrc
+xt/pod.t
+xt/spelling.t
 Makefile.PL
-README
 META.yml
