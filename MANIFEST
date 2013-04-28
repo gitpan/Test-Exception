@@ -21,3 +21,4 @@ xt/pod.t
 xt/spelling.t
 Makefile.PL
 META.yml
+META.json
