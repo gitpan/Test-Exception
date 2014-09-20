@@ -4,7 +4,7 @@
       "Adrian Howard <adrianh@quietstars.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.421",
+   "generated_by" : "Module::Build version 0.4206",
    "license" : [
       "perl_5"
    ],
@@ -33,7 +33,7 @@
    "provides" : {
       "Test::Exception" : {
          "file" : "lib/Test/Exception.pm",
-         "version" : "0.33"
+         "version" : "0.34"
       }
    },
    "release_status" : "stable",
@@ -42,5 +42,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.33"
+   "version" : "0.34"
 }
