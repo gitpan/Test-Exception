@@ -48,8 +48,8 @@ DESCRIPTION
     If you are not already familiar with Test::More now would be the time to
     go take a look.
 
-    You can specify the test plan when you `use Test::Exception' in the same
-    way as `use Test::More'. See Test::More for details.
+    You can specify the test plan when you "use Test::Exception" in the same
+    way as "use Test::More". See Test::More for details.
 
     NOTE: Test::Exception only checks for exceptions. It will ignore other
     methods of stopping program execution - including exit(). If you have an
@@ -68,7 +68,7 @@ DESCRIPTION
 
             throws_ok { read_file( 'unreadable' ) } qr/No file/, 'no file';
 
-        If your perl does not support `qr//' you can also pass a regex-like
+        If your perl does not support "qr//" you can also pass a regex-like
         string, for example:
 
             throws_ok { read_file( 'unreadable' ) } '/No file/', 'no file';
@@ -79,7 +79,7 @@ DESCRIPTION
 
             throws_ok { $foo->bar } "Error::Simple", 'simple error';
 
-        Will only pass if the `bar' method throws an Error::Simple
+        Will only pass if the "bar" method throws an Error::Simple
         exception, or a subclass of an Error::Simple exception.
 
         You can get the same effect by passing an instance of the exception
@@ -108,7 +108,7 @@ DESCRIPTION
         A description of the exception being checked is used if no optional
         test description is passed.
 
-        NOTE: Rememeber when you `die $string_without_a_trailing_newline'
+        NOTE: Rememeber when you "die $string_without_a_trailing_newline"
         perl will automatically add the current script line number, input
         line number and a newline. This will form part of the string that
         throws_ok regular expressions match against.
@@ -185,7 +185,7 @@ DESCRIPTION
 
           is read_file('answer.txt'), "42\n", 'answer is 42';
 
-        unless `read_file('answer.txt')' dies, in which case you get the
+        unless "read_file('answer.txt')" dies, in which case you get the
         same kind of error as lives_ok()
 
           not ok 1 - answer is 42
@@ -215,49 +215,49 @@ SKIPPING TEST::EXCEPTION TESTS
       plan tests => 2;
       # ... tests that need Test::Exception ...
 
-    Note that we load Test::Exception in a `BEGIN' block ensuring that the
+    Note that we load Test::Exception in a "BEGIN" block ensuring that the
     subroutine prototypes are in place before the rest of the test script is
     compiled.
 
 BUGS
     There are some edge cases in Perl's exception handling where
     Test::Exception will miss exceptions thrown in DESTROY blocks. See the
-    RT bug http://rt.cpan.org/Ticket/Display.html?id=24678 for details,
+    RT bug <http://rt.cpan.org/Ticket/Display.html?id=24678> for details,
     along with the t/edge-cases.t in the distribution test suite. These will
     be addressed in a future Test::Exception release.
 
     If you find any more bugs please let me know by e-mail, or report the
-    problem with http://rt.cpan.org/.
+    problem with <http://rt.cpan.org/>.
 
 COMMUNITY
     perl-qa
         If you are interested in testing using Perl I recommend you visit
-        http://qa.perl.org/ and join the excellent perl-qa mailing list. See
-        http://lists.perl.org/showlist.cgi?name=perl-qa for details on how
-        to subscribe.
+        <http://qa.perl.org/> and join the excellent perl-qa mailing list.
+        See <http://lists.perl.org/showlist.cgi?name=perl-qa> for details on
+        how to subscribe.
 
     perlmonks
         You can find users of Test::Exception, including the module author,
-        on http://www.perlmonks.org/. Feel free to ask questions on
+        on <http://www.perlmonks.org/>. Feel free to ask questions on
         Test::Exception there.
 
     CPAN::Forum
         The CPAN Forum is a web forum for discussing Perl's CPAN modules.
         The Test::Exception forum can be found at
-        http://www.cpanforum.com/dist/Test-Exception.
+        <http://www.cpanforum.com/dist/Test-Exception>.
 
     AnnoCPAN
         AnnoCPAN is a web site that allows community annotations of Perl
         module documentation. The Test::Exception annotations can be found
-        at http://annocpan.org/~ADIE/Test-Exception/.
+        at <http://annocpan.org/~ADIE/Test-Exception/>.
 
 TO DO
     If you think this module should do something that it doesn't (or does
     something that it shouldn't) please let me know.
 
     You can see my current to do list at
-    http://adrianh.tadalist.com/lists/public/15421, with an RSS feed of
-    changes at http://adrianh.tadalist.com/lists/feed_public/15421.
+    <http://adrianh.tadalist.com/lists/public/15421>, with an RSS feed of
+    changes at <http://adrianh.tadalist.com/lists/feed_public/15421>.
 
 ACKNOWLEDGMENTS
     Thanks to chromatic and Michael G Schwern for the excellent
@@ -279,7 +279,7 @@ AUTHOR
     useful.
 
 SEE ALSO
-    http://del.icio.us/tag/Test::Exception
+    <http://del.icio.us/tag/Test::Exception>
         Delicious links on Test::Exception.
 
     Test::Warn & Test::NoWarnings
@@ -291,10 +291,10 @@ SEE ALSO
     Test::Simple & Test::More
         Basic utilities for writing tests.
 
-    http://qa.perl.org/test-modules.html
+    <http://qa.perl.org/test-modules.html>
         Overview of some of the many testing modules available on CPAN.
 
-    http://del.icio.us/tag/perl+testing
+    <http://del.icio.us/tag/perl+testing>
         Delicious links on perl testing.
 
 LICENCE

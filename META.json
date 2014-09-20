@@ -4,7 +4,7 @@
       "Adrian Howard <adrianh@quietstars.com>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.112621",
+   "generated_by" : "Module::Build version 0.421",
    "license" : [
       "perl_5"
    ],
@@ -16,7 +16,7 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build" : "0.38"
+            "Module::Build" : "0.42"
          }
       },
       "runtime" : {
@@ -33,7 +33,7 @@
    "provides" : {
       "Test::Exception" : {
          "file" : "lib/Test/Exception.pm",
-         "version" : "0.32"
+         "version" : "0.33"
       }
    },
    "release_status" : "stable",
@@ -42,5 +42,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.32"
+   "version" : "0.33"
 }
